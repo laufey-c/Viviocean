@@ -1,0 +1,6 @@
+{
+  "name": "Un Millón de Piratas: Grand Line",
+  "description": "Simulador pirata autónomo en 3D con estética One Piece: crea tu pirata, navega por los Cuatro Mares y el Grand Line, descubre Frutas del Diablo y escala carteles de Se Busca.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

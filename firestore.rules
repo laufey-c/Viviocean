@@ -1,0 +1,235 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid == userId && data.uid == request.auth.uid
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 60
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPirate(data, pirateId) {
+      return data.keys().hasAll([
+          'id', 'ownerId', 'isPublic', 'name', 'epithet', 'faction', 'role', 'originSea',
+          'dream', 'physicalTraits', 'mentalTraits', 'bounty', 'berries',
+          'wins', 'losses', 'devilFruit', 'crewName', 'islandId',
+          'flagColor', 'flagEmblem', 'hatStyle', 'skinTone', 'hairStyle',
+          'hairColor', 'bodyBuild', 'outfitStyle', 'outfitColor', 'accessory',
+          'directive', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'ownerId', 'isPublic', 'name', 'epithet', 'faction', 'role', 'race', 'originSea',
+          'dream', 'physicalTraits', 'mentalTraits', 'bounty', 'berries',
+          'wins', 'losses', 'devilFruit', 'crewName', 'islandId',
+          'flagColor', 'flagEmblem', 'hatStyle', 'hatColor', 'skinTone', 'hairStyle',
+          'hairColor', 'bodyBuild', 'outfitStyle', 'outfitColor', 'accessory',
+          'accessoryColor', 'capeStyle', 'capeColor',
+          'inventory', 'equipped', 'directive', 'status', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id) && data.id == pirateId
+        && isValidId(data.ownerId) && data.ownerId == request.auth.uid
+        && data.isPublic is bool && data.isPublic == true
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 32
+        && data.epithet is string && data.epithet.size() <= 40
+        && data.faction in ['piratas', 'marines', 'revolucionarios', 'aventureros']
+        && data.role in ['Capitán', 'Espadachín', 'Navegante', 'Cocinero', 'Artillero', 'Médico', 'Músico']
+        && (!('race' in data) || data.race in ['humano', 'gyojin', 'mink', 'skypiea', 'lunaria', 'oni', 'gigante'])
+        && data.originSea in ['Mar del Este', 'Mar del Norte', 'Mar del Sur', 'Mar del Oeste']
+        && data.dream is string && data.dream.size() <= 120
+        && data.physicalTraits is list && data.physicalTraits.size() >= 1 && data.physicalTraits.size() <= 2
+        && data.physicalTraits[0] is string && data.physicalTraits[0].size() <= 32
+        && data.physicalTraits.hasOnly([
+          'fuerte', 'rapido', 'grandes_reflejos', 'resistente', 'golpe_demoledor',
+          'agil', 'cuerpo_ferreo', 'pulmones_profundos', 'zancada_gigante'
+        ])
+        && data.mentalTraits is list && data.mentalTraits.size() >= 1 && data.mentalTraits.size() <= 2
+        && data.mentalTraits[0] is string && data.mentalTraits[0].size() <= 32
+        && data.mentalTraits.hasOnly([
+          'astuto', 'estratega', 'instinto_haki', 'ojo_halcon', 'suerte_pirata',
+          'navegante_nato', 'temerario', 'sangre_fria', 'ambicioso'
+        ])
+        && data.bounty is number && data.bounty >= 0 && data.bounty <= 10000000000
+        && data.berries is number && data.berries >= 0 && data.berries <= 10000000000
+        && data.wins is number && data.wins >= 0 && data.wins <= 1000000
+        && data.losses is number && data.losses >= 0 && data.losses <= 1000000
+        && data.devilFruit is string && data.devilFruit.size() <= 40
+        && data.crewName is string && data.crewName.size() >= 1 && data.crewName.size() <= 48
+        && isValidId(data.islandId) && data.islandId.size() <= 64
+        && data.flagColor is string && data.flagColor.size() >= 4 && data.flagColor.size() <= 16
+        && data.flagEmblem in ['skull', 'sun', 'heart', 'anchor', 'flame', 'crown']
+        && data.hatStyle in [
+          'none', 'straw', 'tricorn', 'bicorn', 'tophat', 'bandana',
+          'marine', 'crown', 'afro', 'viking', 'hood'
+        ]
+        && (!('hatColor' in data) || (data.hatColor is string && data.hatColor.size() <= 16))
+        && data.skinTone is string && data.skinTone.size() >= 4 && data.skinTone.size() <= 16
+        && data.hairStyle in [
+          'spiky', 'short', 'ponytail', 'long', 'curly', 'bob',
+          'mohawk', 'slick', 'twintails', 'topknot', 'mane'
+        ]
+        && data.hairColor is string && data.hairColor.size() >= 4 && data.hairColor.size() <= 16
+        && data.bodyBuild in ['normal', 'robust', 'slim']
+        && data.outfitStyle in ['shirt', 'coat', 'striped', 'suit', 'kimono', 'marine', 'vest']
+        && data.outfitColor is string && data.outfitColor.size() >= 4 && data.outfitColor.size() <= 16
+        && data.accessory in [
+          'none', 'scar', 'cross_scar', 'glasses', 'sunglasses', 'eyepatch',
+          'beard', 'mustache', 'goatee', 'cigar', 'clown_nose', 'scarf',
+          'mask', 'bandage', 'earrings'
+        ]
+        && (!('accessoryColor' in data) || (data.accessoryColor is string && data.accessoryColor.size() <= 16))
+        && (!('capeStyle' in data) || data.capeStyle in [
+          'none', 'cape', 'coat_cape', 'justice_coat', 'feather_boa', 'raijin_drums', 'sash_cloak'
+        ])
+        && (!('capeColor' in data) || (data.capeColor is string && data.capeColor.size() <= 16))
+        && (!('inventory' in data) || (data.inventory is list && data.inventory.size() <= 64))
+        && (!('equipped' in data) || (data.equipped is map && data.equipped.keys().hasOnly(['arma', 'armadura', 'amuleto'])))
+        && data.directive in ['libre', 'tesoros', 'duelos', 'grand_line', 'descansar']
+        && data.status in ['active', 'resting']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidWorldEvent(data, eventId) {
+      return data.keys().hasAll([
+          'id', 'authorId', 'isPublic', 'type', 'sea', 'islandId',
+          'pirateId', 'pirateName', 'message', 'bountyDelta', 'day', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'authorId', 'isPublic', 'type', 'sea', 'islandId',
+          'pirateId', 'pirateName', 'message', 'bountyDelta', 'day', 'createdAt'
+        ])
+        && isValidId(data.id) && data.id == eventId
+        && isValidId(data.authorId) && data.authorId == request.auth.uid
+        && data.isPublic is bool && data.isPublic == true
+        && data.type in ['duel', 'treasure', 'voyage', 'dock', 'devil_fruit', 'crew', 'launch', 'drop']
+        && data.sea is string && data.sea.size() >= 1 && data.sea.size() <= 32
+        && isValidId(data.islandId) && data.islandId.size() <= 64
+        && isValidId(data.pirateId)
+        && data.pirateName is string && data.pirateName.size() >= 1 && data.pirateName.size() <= 40
+        && data.message is string && data.message.size() >= 1 && data.message.size() <= 240
+        && data.bountyDelta is number && data.bountyDelta >= 0 && data.bountyDelta <= 500000000
+        && data.day is number && data.day >= 1 && data.day <= 1000000
+        && data.createdAt is timestamp;
+    }
+
+    function isValidChatMessage(data, messageId) {
+      return data.keys().hasAll(['id', 'authorId', 'isPublic', 'senderName', 'sea', 'text', 'createdAt'])
+        && data.keys().hasOnly(['id', 'authorId', 'isPublic', 'senderName', 'sea', 'text', 'createdAt'])
+        && isValidId(data.id) && data.id == messageId
+        && isValidId(data.authorId) && data.authorId == request.auth.uid
+        && data.isPublic is bool && data.isPublic == true
+        && data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 40
+        && data.sea is string && data.sea.size() >= 1 && data.sea.size() <= 32
+        && data.text is string && data.text.size() >= 1 && data.text.size() <= 280
+        && data.createdAt is timestamp;
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isVerifiedUser() && isOwner(userId);
+      allow list: if false;
+      allow create: if isValidId(userId) && isVerifiedUser() && isOwner(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId) && isVerifiedUser() && isOwner(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    match /pirates/{pirateId} {
+      allow get: if isValidId(pirateId) && (existing().isPublic == true || (isVerifiedUser() && existing().ownerId == request.auth.uid));
+      allow list: if resource.data.isPublic == true || (isVerifiedUser() && resource.data.ownerId == request.auth.uid);
+      allow create: if isValidId(pirateId) && isVerifiedUser()
+        && isValidPirate(incoming(), pirateId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(pirateId) && isVerifiedUser()
+        && isValidPirate(incoming(), pirateId)
+        && existing().ownerId == request.auth.uid
+        && incoming().id == existing().id
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && (!('race' in existing()) || incoming().race == existing().race)
+        && incoming().hairStyle == existing().hairStyle
+        && incoming().hairColor == existing().hairColor
+        && incoming().skinTone == existing().skinTone
+        && incoming().bodyBuild == existing().bodyBuild
+        && incoming().updatedAt == request.time
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['directive', 'status', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['crewName', 'role', 'flagColor', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['inventory', 'equipped', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'hatStyle', 'hatColor', 'outfitStyle', 'outfitColor', 'accessory',
+            'accessoryColor', 'capeStyle', 'capeColor', 'updatedAt'
+          ]) ||
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'bounty', 'berries', 'wins', 'losses', 'devilFruit', 'crewName', 'islandId',
+            'inventory', 'equipped', 'updatedAt'
+          ]) ||
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'name', 'epithet', 'faction', 'role', 'originSea', 'dream',
+            'physicalTraits', 'mentalTraits', 'flagColor', 'hatStyle', 'hatColor',
+            'outfitStyle', 'outfitColor', 'accessory', 'accessoryColor',
+            'capeStyle', 'capeColor', 'updatedAt'
+          ])
+        );
+      allow delete: if isValidId(pirateId) && isVerifiedUser() && existing().ownerId == request.auth.uid;
+    }
+
+    match /worldEvents/{eventId} {
+      allow get: if isValidId(eventId) && existing().isPublic == true;
+      allow list: if resource.data.isPublic == true;
+      allow create: if isValidId(eventId) && isVerifiedUser()
+        && isValidWorldEvent(incoming(), eventId)
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(eventId) && isVerifiedUser() && existing().authorId == request.auth.uid;
+    }
+
+    match /chatMessages/{messageId} {
+      allow get: if isValidId(messageId) && existing().isPublic == true;
+      allow list: if resource.data.isPublic == true;
+      allow create: if isValidId(messageId) && isVerifiedUser()
+        && isValidChatMessage(incoming(), messageId)
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(messageId) && isVerifiedUser() && existing().authorId == request.auth.uid;
+    }
+  }
+}

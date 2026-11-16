@@ -1,0 +1,386 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private profile for an authenticated captain.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "Pirate": {
+      "title": "Pirate",
+      "description": "A pirate character sailing autonomously in Vivid Ocean.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32
+        },
+        "epithet": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 40
+        },
+        "faction": {
+          "type": "string",
+          "enum": ["piratas", "marines", "revolucionarios", "aventureros"]
+        },
+        "role": {
+          "type": "string",
+          "enum": ["Capitán", "Espadachín", "Navegante", "Cocinero", "Artillero", "Médico", "Músico"]
+        },
+        "race": {
+          "type": "string",
+          "enum": ["humano", "gyojin", "mink", "skypiea", "lunaria", "oni", "gigante"]
+        },
+        "originSea": {
+          "type": "string",
+          "enum": ["Mar del Este", "Mar del Norte", "Mar del Sur", "Mar del Oeste"]
+        },
+        "dream": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "physicalTraits": {
+          "type": "array"
+        },
+        "mentalTraits": {
+          "type": "array"
+        },
+        "bounty": {
+          "type": "number"
+        },
+        "berries": {
+          "type": "number"
+        },
+        "wins": {
+          "type": "number"
+        },
+        "losses": {
+          "type": "number"
+        },
+        "devilFruit": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 40
+        },
+        "crewName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "islandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "flagColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "flagEmblem": {
+          "type": "string",
+          "enum": ["skull", "sun", "heart", "anchor", "flame", "crown"]
+        },
+        "hatStyle": {
+          "type": "string",
+          "enum": ["none", "straw", "tricorn", "bicorn", "tophat", "bandana", "marine", "crown", "afro", "viking", "hood"]
+        },
+        "hatColor": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 16
+        },
+        "skinTone": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "hairStyle": {
+          "type": "string",
+          "enum": ["spiky", "short", "ponytail", "long", "curly", "bob", "mohawk", "slick", "twintails", "topknot", "mane"]
+        },
+        "hairColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "bodyBuild": {
+          "type": "string",
+          "enum": ["normal", "robust", "slim"]
+        },
+        "outfitStyle": {
+          "type": "string",
+          "enum": ["shirt", "coat", "striped", "suit", "kimono", "marine", "vest"]
+        },
+        "outfitColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "accessory": {
+          "type": "string",
+          "enum": [
+            "none", "scar", "cross_scar", "glasses", "sunglasses", "eyepatch",
+            "beard", "mustache", "goatee", "cigar", "clown_nose", "scarf",
+            "mask", "bandage", "earrings"
+          ]
+        },
+        "accessoryColor": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 16
+        },
+        "capeStyle": {
+          "type": "string",
+          "enum": ["none", "cape", "coat_cape", "justice_coat", "feather_boa", "raijin_drums", "sash_cloak"]
+        },
+        "capeColor": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 16
+        },
+        "inventory": {
+          "type": "array"
+        },
+        "equipped": {
+          "type": "object"
+        },
+        "directive": {
+          "type": "string",
+          "enum": ["libre", "tesoros", "duelos", "grand_line", "descansar"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "resting"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "ownerId",
+        "isPublic",
+        "name",
+        "epithet",
+        "faction",
+        "role",
+        "originSea",
+        "dream",
+        "physicalTraits",
+        "mentalTraits",
+        "bounty",
+        "berries",
+        "wins",
+        "losses",
+        "devilFruit",
+        "crewName",
+        "islandId",
+        "flagColor",
+        "flagEmblem",
+        "hatStyle",
+        "skinTone",
+        "hairStyle",
+        "hairColor",
+        "bodyBuild",
+        "outfitStyle",
+        "outfitColor",
+        "accessory",
+        "directive",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "WorldEvent": {
+      "title": "WorldEvent",
+      "description": "A public chronicle event logged to El Morgan Diario.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["duel", "treasure", "voyage", "dock", "devil_fruit", "crew", "launch", "drop"]
+        },
+        "sea": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "islandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "pirateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "pirateName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "bountyDelta": {
+          "type": "number"
+        },
+        "day": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "authorId",
+        "isPublic",
+        "type",
+        "sea",
+        "islandId",
+        "pirateId",
+        "pirateName",
+        "message",
+        "bountyDelta",
+        "day",
+        "createdAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A Den Den Mushi public tavern chat message.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "senderName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "sea": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 280
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "authorId",
+        "isPublic",
+        "senderName",
+        "sea",
+        "text",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private captain account metadata."
+    },
+    "/pirates/{pirateId}": {
+      "schema": { "$ref": "#/entities/Pirate" },
+      "description": "Shared Vivid Ocean pirate characters."
+    },
+    "/worldEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/WorldEvent" },
+      "description": "Shared world chronicle headlines."
+    },
+    "/chatMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Den Den Mushi tavern chat messages."
+    }
+  }
+}
